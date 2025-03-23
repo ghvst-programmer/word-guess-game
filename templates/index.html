@@ -1,0 +1,91 @@
+<!DOCTYPE html> 
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ghvst Programmer's Game</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/typed.js/2.0.12/typed.min.js"></script>
+</head>
+<body>
+    <h1 id="title"></h1>
+    <div class="scoreboard">Score: <span id="score">{{ score }}</span></div>
+    <div class="game-container">
+        <p id="hint"></p>
+        <p id="hint-letters"></p>
+        <input type="text" id="guess" placeholder="Enter your guess">
+        <button onclick="checkGuess()">Submit</button>
+        <p id="result"></p>
+    </div>
+
+    <div id="popup" class="popup">
+        <div class="popup-content">
+            <img id="popup-img" src="" alt="" />
+            <p id="popup-message"></p>
+            <button onclick="closePopup()">OK</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            new Typed("#title", {
+                strings: ["Ghvst Programmer's Game"],
+                typeSpeed: 100,
+                showCursor: false
+            });
+            fetchWord();
+        });
+
+        let correctWord = "";
+
+        function fetchWord() {
+            fetch('/get_word')
+                .then(response => response.json())
+                .then(data => {
+                    correctWord = data.word;
+                    document.getElementById("hint").innerText = "Hint: " + data.hint;
+                    document.getElementById("hint-letters").innerText = "Hint Letters: " + data.hint_letters;
+                    document.getElementById("guess").value = "";
+                });
+        }
+
+        function checkGuess() {
+            let guess = document.getElementById("guess").value.toLowerCase();
+            if (guess === correctWord) {
+                updateScore(10);
+                showPopup("correct.gif", "Congratulations! You guessed it right!");
+            } else {
+                resetScore();
+                showPopup("gameover.gif", "Game Over! Try again.");
+            }
+        }
+
+        function updateScore(points) {
+            fetch('/update_score', { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById("score").innerText = data.score;
+                });
+        }
+
+        function resetScore() {
+            fetch('/reset_score', { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById("score").innerText = data.score;
+                });
+        }
+
+        function showPopup(image, message) {
+            document.getElementById("popup-img").src = image;
+            document.getElementById("popup-message").innerText = message;
+            document.getElementById("popup").style.display = "flex";
+        }
+
+        function closePopup() {
+            document.getElementById("popup").style.display = "none";
+            fetchWord();
+        }
+    </script>
+</body>
+</html>
