@@ -13,7 +13,7 @@
     <div class="game-container">
         <p id="hint"></p>
         <p id="hint-letters"></p>
-        <input type="text" id="guess" placeholder="Enter your guess">
+        <input type="text" id="guess" placeholder="Enter your guess" onkeydown="restrictKeys(event)">
         <button onclick="checkGuess()">Submit</button>
         <p id="result"></p>
     </div>
@@ -85,6 +85,17 @@
         function closePopup() {
             document.getElementById("popup").style.display = "none";
             fetchWord();
+        }
+
+        // Restrict input to only letters and disable space bar
+        function restrictKeys(event) {
+            const key = event.keyCode || event.which;
+            // Allow backspace, letters, and numbers, but block space
+            if ((key >= 65 && key <= 90) || (key >= 97 && key <= 122) || key === 8) {
+                return true; // Allow letters and backspace
+            } else {
+                event.preventDefault(); // Block all other keys
+            }
         }
     </script>
 </body>
