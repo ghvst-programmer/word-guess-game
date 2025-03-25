@@ -29,7 +29,7 @@
 
 ---
 
-## 📌 Notable Projects:
+## 📌 Notable Project:
 
 ## 🎮 Word Guess Game
 - **Tech Stack:** Python, JavaScript, Flask
